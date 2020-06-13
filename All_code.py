@@ -391,7 +391,6 @@ while True:
         break
     else:
         paymentguess += 10
-"""
 #-------------------------------------------------------------
 #Exercise: Problem 3
 balance = 320000
@@ -414,6 +413,613 @@ while True:
     else:
         break
 print('Lowest Payment:', round(paymentguess, 2))
+#-------------------------------------------------------------
+#Exercise:Tuples
+def oddTuples(aTup):
+    '''
+    aTup: a tuple
+    returns: tuple, every other element of aTup. 
+    '''
+    bTup = ()
+    i = 0
+    for Word in aTup:
+        i += 1
+        if i%2 == 0 :
+            continue
+        bTup += (Word,)
+    return(bTup)
+
+oddTuples(('I', 'am', 'a', 'test', 'tuple'))
+#-------------------------------------------------------------
+#Exercise:List
+aList = [0, 1, 2, 3, 4, 5]
+bList = aList
+aList[2] = 'hello'
+aList == bList
+
+cList = [6, 5, 4, 3, 2]
+dList = []
+for num in cList:
+    dList.append(num)
+cList == dList
+#-------------------------------------------------------------
+#Exercise:List
+testList = [1, -4, 8, -9]
+
+def applyToEach(L, f):
+    for i in range(len(L)):
+        L[i] = f(L[i])
+def timesFive(a):
+    return (abs(a ** 2))
+
+applyToEach(testList, timesFive)
+print(testList)
+#-------------------------------------------------------------
+#Exercise:5
+def applyEachTo(L, x):
+    result = []
+    for i in range(len(L)):
+        result.append(L[i](x))
+    return result
+
+def square(a):
+    return a*a
+
+def halve(a):
+    return a/2
+
+def inc(a):
+    return a+1
+
+#print(applyEachTo([inc, square, halve, abs], -3))
+
+#print(applyEachTo([inc, square, halve, abs], 3.0))
+
+print(applyEachTo([inc, max, int], -3))
+#-------------------------------------------------------------
+#Exercise:
+animals = { 'a': ['aardvark'], 'b': ['baboon'], 'c': ['coati']}
+animals['d'] = ['donkey']
+animals['d'].append('dog')
+animals['d'].append('dingo')
+
+def how_many(aDict):
+    totalvalues = 0
+    for anDict in aDict.values():
+        totalvalues = totalvalues + len(anDict)
+    return(totalvalues)
+print(how_many(animals))
+#-------------------------------------------------------------
+#Exercise:
+animals = {'a': [], 'b': [1, 7, 5, 4, 3, 18, 10, 0]}
+
+def biggest(aDict):
+    '''
+    aDict: A dictionary, where all the values are lists.
+
+    returns: The key with the largest number of values associated with it
+    '''
+    MaxCount = 0
+    BiggestBaddie = ""
+    if len(aDict) == 0:
+        return None
+    for anDict in aDict:
+        if len(aDict[anDict]) > MaxCount:
+            MaxCount = len(aDict[anDict])
+            BiggestBaddie = anDict
+    return(BiggestBaddie)
+
+print(biggest(animals))
+#-------------------------------------------------------------
+#Exercise:Week 3 Problem 1
+# Hangman game
+#
+
+# -----------------------------------
+# Helper code
+# You don't need to understand this helper code,
+# but you will have to know how to use the functions
+# (so be sure to read the docstrings!)
+
+import random
+import string
+import sys
+
+WORDLIST_FILENAME = "words.txt"
+
+def loadWords():
+
+    print("Loading word list from file...")
+    # inFile: file
+    inFile = open(WORDLIST_FILENAME, 'r')
+    # line: string
+    line = inFile.readline()
+    # wordlist: list of strings
+    wordlist = line.split()
+    print("  ", len(wordlist), "words loaded.")
+    return wordlist
+
+def chooseWord(wordlist):
+
+    return random.choice(wordlist)
+
+# end of helper code
+# -----------------------------------
+
+# Load the list of words into the variable wordlist
+# so that it can be accessed from anywhere in the program
+wordlist = loadWords()
+
+def isWordGuessed(secretWord, lettersGuessed):
+    '''
+    secretWord: string, the word the user is guessing
+    lettersGuessed: list, what letters have been guessed so far
+    returns: boolean, True if all the letters of secretWord are in lettersGuessed;
+      False otherwise
+    '''
+    WordCheck = ""
+    for secretLetter in secretWord:
+        for singleletterGuessed in lettersGuessed:
+            if secretLetter == singleletterGuessed:
+                WordCheck = WordCheck + secretLetter
+                break
+    return WordCheck == secretWord
+
+def getGuessedWord(secretWord, lettersGuessed):
+    '''
+    secretWord: string, the word the user is guessing
+    lettersGuessed: list, what letters have been guessed so far
+    returns: string, comprised of letters and underscores that represents
+      what letters in secretWord have been guessed so far.
+    '''
+    GuessProgress = ""
+    for secretLetter in secretWord:
+        LetterFound = False
+        for singleletterGuessed in lettersGuessed:
+            if secretLetter == singleletterGuessed:
+                GuessProgress = GuessProgress + secretLetter
+                LetterFound = True
+        if LetterFound == False:
+            GuessProgress = GuessProgress + "_"
+    return GuessProgress
+
+def getAvailableLetters(lettersGuessed):
+    '''
+    lettersGuessed: list, what letters have been guessed so far
+    returns: string, comprised of letters that represents what letters have not
+      yet been guessed.
+    '''
+    RemainingLetters = ""
+    for letter in string.ascii_lowercase:
+        if letter in lettersGuessed:
+            pass
+        elif letter not in RemainingLetters:
+            RemainingLetters = RemainingLetters + letter
+    return RemainingLetters
+
+def hangman(secretWord):
+    '''
+    secretWord: string, the secret word to guess.
+
+    Starts up an interactive game of Hangman.
+
+    * At the start of the game, let the user know how many 
+      letters the secretWord contains.
+
+    * Ask the user to supply one guess (i.e. letter) per round.
+
+    * The user should receive feedback immediately after each guess 
+      about whether their guess appears in the computers word.
+
+    * After each round, you should also display to the user the 
+      partially guessed word so far, as well as letters that the 
+      user has not yet guessed.
+
+    Follows the other limitations detailed in the problem write-up.
+    '''
+    NumberofGuessesLeft = 8
+    lettersGuessed = []
+    GameStillGoing = True
+    
+    print("Welcome to the game Hangman!")
+    print("I am thinking of a word that is",len(secretWord),"letters long")
+    print("-----------")
+    while GameStillGoing == True:
+        print("You have",NumberofGuessesLeft,"guesses left")
+        print("Available Letters:",getAvailableLetters(lettersGuessed))
+        GuessedLetter = input("Please guess a letter: ")
+        if GuessedLetter not in getAvailableLetters(lettersGuessed):
+            print("Oops! You've already guessed that letter: "+getGuessedWord(secretWord, lettersGuessed))
+        else:
+            lettersGuessed.append(GuessedLetter)
+            if GuessedLetter in secretWord:
+                print("Good guess: "+getGuessedWord(secretWord, lettersGuessed))
+            else:
+                print("Oops! That letter is not in my word:"+getGuessedWord(secretWord, lettersGuessed))
+                NumberofGuessesLeft -= 1
+        print("-----------")
+        if isWordGuessed(secretWord, lettersGuessed):
+            print("Congratulations, you won!")
+            GameStillGoing = False
+        if NumberofGuessesLeft == 0:
+            print("Sorry, you ran out of guesses. The word was",secretWord,".")
+            GameStillGoing = False
+# When you've completed your hangman function, uncomment these two lines
+# and run this file to test! (hint: you might want to pick your own
+# secretWord while you're testing)
+secretWord = chooseWord(wordlist).lower()
+print(secretWord)
+hangman(secretWord)
+#-------------------------------------------------------------
+#Exercise:MidTerm - Problem 3
+def myLog(x, b):
+    '''
+    x: a positive integer
+    b: a positive integer; b >= 2
+    returns: log_b(x), or, the logarithm of x relative to a base b.
+    '''
+    MultGuess = 0
+    ExponentGuess = 0
+    while MultGuess <= x:
+        MultGuess = b**ExponentGuess
+        ExponentGuess += 1
+    return ExponentGuess - 2
+
+print(myLog(16,2))
+#-------------------------------------------------------------
+#Exercise:MidTerm - Problem 4
+def dotProduct(listA, listB):
+    '''
+    listA: a list of numbers
+    listB: a list of numbers of the same length as listA
+    '''
+    RunningTotal = 0
+    RunningCounter = 0
+    for NumA in listA:
+        RunningTotal = RunningTotal + (NumA * listB[RunningCounter])
+        RunningCounter += 1
+    return RunningTotal
+#-------------------------------------------------------------
+#Exercise:MidTerm - Problem 5
+
+def uniqueValues(aDict):
+    '''
+    aDict: a dictionary
+    '''
+    values = aDict.values()
+    keys = aDict.keys()
+    keysList = []
+    keycounter = 0
+    for key in keys:
+        keycounter = 0
+        for value in values:
+            if value == aDict[key]:
+                keycounter +=1
+        if keycounter < 2:
+            keysList.append(key)
+            keysList.sort()
+    return keysList
+
+print(uniqueValues({0: 9, 1: 1, 2: 7, 3: 3, 5: 2, 6: 5, 7: 8, 9: 10, 10: 0}))
+#-------------------------------------------------------------
+#Exercise:MidTerm - Problem 6
+def max_val(t): 
+    ''' 
+    t, tuple or list
+    Each element of t is either an int, a tuple, or a list
+    No tuple or list is empty
+    Returns the maximum int in t or (recursively) in an element of t 
+    '''
+    CheckItem = 0
+    for eachitem in t:
+        try:
+            if eachitem > CheckItem:
+                CheckItem = eachitem
+        except:
+            if max_val(eachitem) > CheckItem:
+                CheckItem = max_val(eachitem)
+    return CheckItem
+
+
+print(max_val((5, (1, 2), [[1], [2]])))
+print(max_val((5, (1, 2), [[1], [9]])))
+#-------------------------------------------------------------
+#Exercise:MidTerm - Problem 6
+def satisfiesF(L):
+    '''
+    Assumes L is a list of strings
+    Assume function f is already defined for you and it maps a string to a Boolean
+    Mutates L such that it contains all of the strings, s, originally in L such
+            that f(s) returns True, and no other elements. Remaining elements in L
+            should be in the same order.
+    Returns the length of L after mutation
+    '''
+    ListofStrings = L[:]
+    for SingleString in ListofStrings:
+        if f(SingleString)==False:
+            L.remove(SingleString)
+    return len(L)
+
+run_satisfiesF(L, satisfiesF)
+
+
+def f(s):
+    return 'a' in s
+      
+L = ['a', 'b', 'a']
+print(satisfiesF(L))
+print(L)
+"""
+#-------------------------------------------------------------
+#Exercise
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
